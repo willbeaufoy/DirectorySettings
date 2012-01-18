@@ -8,10 +8,12 @@ Much `TODO` here, including:
 - performance
 - watching for settings changes
 
-Example: To get a different color scheme for files in a given directory, add a `.sublime-settings` file to `~/code/project/` that reads:
+Example: To get a different color scheme for files in a given directory, add a `.sublime-settings` file to that directory that contains:
 
     {
-        "color_scheme": "Packages/Color Scheme - Default/SpecialTheme.tmTheme"
+        "color_scheme": "Packages/Color Scheme - Default/DifferentTheme.tmTheme"
     }
 
 That is all for now!
+
+License: MIT or BSD, take your pick.
