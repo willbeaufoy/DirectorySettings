@@ -9,8 +9,14 @@ import json
 
 merged_settings_cache = {"/": {}}
 
+# See README for top-level TODOs.
+# The most obvious TODO here is to stop using @classmethod everywhere and
+# structure things more sanely. I couldn't find documentation, however, on
+# (1) how to properly instantiate sublime plugin commands, and 
+# (2) how to manage global data (like caches) for sublime plugins
+# ...leading to this less than ideal whatnot.
 
-class ClearDirectorySettingsCacheCommand(sublime_plugin.WindowCommand):
+class ClearDirectorySettingsCacheCommand(sublime_plugin.ApplicationCommand):
     """Clear out the cache, presumably because something changed."""
     @classmethod
     def clear_cache(cls):
