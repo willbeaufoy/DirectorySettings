@@ -28,6 +28,10 @@ If you change your `.sublime-settings` often, consider mapping a key to the `rel
 
 Easy.
 
+### Example use case:
+
+I am currently porting an app from Python 2 to 3. I've got one directory with the old code, one directory with the new code. Lots of similarly named files! I popped a `.sublime-settings` at the top of each source tree so I could have different fonts and color schemes -- this helps me quickly distinguish which files I'm looking at when I'm editing.
+
 ### TODO:
 
 - support reverting settings that were previously applied (for cleaner, better reloads)
