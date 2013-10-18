@@ -52,15 +52,17 @@ class DirectorySettings:
         return self._get_directory(directory)
 
     def reset(self):
+        """ Reset the cache """
         self._cache = {'/': {}}
 
     def apply(self, view):
-        if not view.settings().get(DIRECTORY_SETTINGS_FLAG, True):
+        """ Apply the current overrides to a given view """
+        settings = view.settings()
+        if not settings.get(DIRECTORY_SETTINGS_FLAG, True):
             return
 
         overrides = self.get_settings(view.file_name())
         #print(overrides)
-        settings = view.settings()
         for name, value in overrides.items():
             if value == ERASE_MARK:
                 if settings.has(name):
@@ -68,15 +70,20 @@ class DirectorySettings:
             else:
                 settings.set(name, value)
 
+    def reload(self):
+        """ Apply the current overrides to all the loaded views """
+        for window in sublime.windows():
+            for view in window.views():
+                if view.file_name():
+                    self.apply(view)
+
 
 class ReloadDirectorySettingsCommand(sublime_plugin.ApplicationCommand):
     """Clear out the cache and reload settings for all views in all windows."""
     def run(self):
         global instance
         instance.reset()
-        for window in sublime.windows():
-            for view in window.views():
-                finder.apply(view)
+        instance.reload()
 
 
 class DirectorySettingsEventListener(sublime_plugin.EventListener):
@@ -93,3 +100,10 @@ class DirectorySettingsEventListener(sublime_plugin.EventListener):
     def on_load(self, view):
         self.instance.apply(view)
 
+    def on_post_save(self, view):
+        """ When editing a directory settings file force a reload of the current buffers
+        """
+        fname = os.path.basename(view.file_name())
+        if fname == SETTINGS_FILE:
+            self.instance.reset()
+            self.instance.reload()

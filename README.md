@@ -22,13 +22,14 @@ That's it!
 
 ### Reloading settings:
 
-If you change your `.sublime-settings` often, consider mapping a key to the `reload_directory_settings` command. I use the following mapping:
+When you edit your `.sublime-settings` inside Sublime, it will automatically apply the changes to every open file when saving the
+changes.
+
+Additionally you can issue a reload from the Command Palette under "Reload Directory Settings" or event assign a keyboard shortcut
+to it like the following:
 
     { "keys": ["super+ctrl+alt+r"], "command": "reload_directory_settings"}
 
-Easy.
-
-You can also reload from the Command Palette under "Reload Directory Settings".
 
 ### Example use case:
 
@@ -45,7 +46,6 @@ the value `#ERASE#` in your directory overrides.
 ### TODO:
 
 - support reverting settings that were previously applied (for cleaner, better reloads)
-- watch filesystem for settings changes
 - make sure it works on something other than OS X (it should)
 
 ### License:
