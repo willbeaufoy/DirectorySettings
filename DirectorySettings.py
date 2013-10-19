@@ -1,6 +1,7 @@
 import sublime, sublime_plugin
 import os
 import json
+from string import Template
 
 
 SETTINGS_FILE = '.sublime-settings'
@@ -18,14 +19,33 @@ class DirectorySettings:
     def __init__(self):
         self.reset()
 
+    def _placeholders(self, value, placeholders):
+        """ Applies a set of placeholders to the given settings recursively
+            See http://sublimetext.info/docs/en/reference/build_systems.html#variables
+        """
+        if isinstance(value, str) and '$' in value:
+            value = Template(value).safe_substitute(placeholders)
+        elif isinstance(value, dict):
+            for key, val in value.items():
+                value[key] = self._placeholders(val, placeholders)
+        elif isinstance(value, list):
+            value = [self._placeholders(x, placeholders) for x in value]
+
+        return value
+
     def _load(self, directory):
         """Return settings, if any, strictly for this directory."""
+        settings = {}
+        fname = os.path.join(directory, SETTINGS_FILE)
         try:
-            fname = os.path.join(directory, SETTINGS_FILE)
-            with open(fname) as f:
-                settings = json.loads(f.read())
-        except Exception:
-            settings = {}
+            with open(fname) as fp:
+                data = fp.read()
+                data = self._placeholders(data, {'settings_path': directory})
+                settings = json.loads(data)
+        except ValueError as ex:
+            print('{0}: ERROR parsing file {1}: {2}'.format(__name__, fname, ex))
+        except:
+            pass
 
         return settings
 
@@ -62,6 +82,31 @@ class DirectorySettings:
             return
 
         overrides = self.get_settings(view.file_name())
+        if not overrides:
+            return
+
+        # Compute the list of placeholders 
+        # see http://docs.sublimetext.info/en/sublime-text-3/reference/build_systems.html#build-system-variables
+        # Note: `settings_path` is automatically injected before loading the settings
+        fname = view.file_name()
+        try:
+            pname = view.window().project_file_name() or ''
+        except: # ST2
+            pname = ''
+
+        overrides = self._placeholders(overrides, {
+            'file': fname,
+            'file_path': os.path.dirname(fname),
+            'file_name': os.path.basename(fname),
+            'file_extension': os.path.splitext(fname)[1],
+            'file_base_name': os.path.splitext(fname)[0],
+            'project': pname,
+            'project_path': os.path.dirname(pname),
+            'project_name': os.path.basename(pname),
+            'project_extension': os.path.splitext(pname)[1],
+            'project_base_name': os.path.splitext(pname)[0],
+        })
+
         #print(overrides)
         for name, value in overrides.items():
             if value == ERASE_MARK:

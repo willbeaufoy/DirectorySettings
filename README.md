@@ -42,6 +42,18 @@ the value `#ERASE#` in your directory overrides.
 
     { 'key_i_want_remove': '#ERASE#' }
 
+You can also use placeholders in your per directory settings files, they are the same as the ones supported
+by [Sublime's build files](http://docs.sublimetext.info/en/latest/reference/build_systems.html#build-system-variables)
+with the exception of `$packages`.
+
+There is also a handy specific one that gets replaced by the directory where the `.sublime-settings` was loaded
+from: `settings_path`. Allowing to reference relative paths easily.
+
+	{ "boo.args": [
+		"-r:$settings_path/build/Project.dll",
+		"-r:${file_path}/bin/Debug/${file_base_name}.dll" 
+	]}
+
 
 ### TODO:
 
